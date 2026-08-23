@@ -1,13 +1,20 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import { AudioPlayer } from '@/components/ui/AudioPlayer';
 import { PhotoAlbumModal } from '@/components/ui/PhotoAlbumModal';
 
+const presets = [
+  { id: 'gentle', label: 'Gentle' },
+  { id: 'moderate', label: 'Moderate' },
+  { id: 'blizzard', label: 'Blizzard' },
+] as const;
+
 /**
  * Flush Top Navigation Bar directly attached to top of browser window.
- * Styled with a bright, semi-transparent frosted glass aesthetic and square profile photo container.
+ * Styled with a bright, semi-transparent frosted glass aesthetic and smooth sliding active pill animation.
  */
 export function Navbar() {
   const activePreset = useStore((state) => state.activePreset);
@@ -43,38 +50,33 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Clean Snow Controls Presets (Centered on desktop, responsive inline on mobile) */}
-        <div className="flex items-center justify-center gap-0.5 sm:gap-1 bg-slate-900/50 p-0.5 sm:p-1 rounded-lg border border-white/15 shadow-lg backdrop-blur-md shrink-0">
-          <button
-            onClick={() => setActivePreset('gentle')}
-            className={`px-2 sm:px-4 py-1 text-[10px] sm:text-xs font-medium rounded-md transition-all ${
-              activePreset === 'gentle'
-                ? 'bg-sky-500 text-slate-950 font-semibold shadow'
-                : 'text-slate-300 hover:text-white'
-            }`}
-          >
-            Gentle
-          </button>
-          <button
-            onClick={() => setActivePreset('moderate')}
-            className={`px-2 sm:px-4 py-1 text-[10px] sm:text-xs font-medium rounded-md transition-all ${
-              activePreset === 'moderate'
-                ? 'bg-sky-500 text-slate-950 font-semibold shadow'
-                : 'text-slate-300 hover:text-white'
-            }`}
-          >
-            Moderate
-          </button>
-          <button
-            onClick={() => setActivePreset('blizzard')}
-            className={`px-2 sm:px-4 py-1 text-[10px] sm:text-xs font-medium rounded-md transition-all ${
-              activePreset === 'blizzard'
-                ? 'bg-gradient-to-r from-sky-400 to-teal-300 text-slate-950 font-bold shadow'
-                : 'text-slate-300 hover:text-white'
-            }`}
-          >
-            Blizzard
-          </button>
+        {/* Clean Snow Controls Presets with Smooth Sliding Pill Indicator */}
+        <div className="relative flex items-center justify-center gap-0.5 sm:gap-1 bg-slate-900/50 p-0.5 sm:p-1 rounded-lg border border-white/15 shadow-lg backdrop-blur-md shrink-0">
+          {presets.map((preset) => {
+            const isActive = activePreset === preset.id;
+            return (
+              <button
+                key={preset.id}
+                onClick={() => setActivePreset(preset.id)}
+                className={`relative px-2.5 sm:px-4 py-1 text-[10px] sm:text-xs font-semibold rounded-md transition-colors z-10 ${
+                  isActive ? 'text-slate-950 font-bold' : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activePresetPill"
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    className={`absolute inset-0 rounded-md -z-10 shadow-md ${
+                      preset.id === 'blizzard'
+                        ? 'bg-gradient-to-r from-sky-400 to-teal-300'
+                        : 'bg-sky-400'
+                    }`}
+                  />
+                )}
+                <span className="relative z-10">{preset.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Interactive Components (Right Side: Audio & Photo Album) */}
