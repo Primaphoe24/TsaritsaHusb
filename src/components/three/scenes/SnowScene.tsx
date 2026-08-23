@@ -106,18 +106,27 @@ export function SnowScene({
       ? snowSpeed * 1.6
       : snowSpeed;
 
-  // Atmospheric Badai (Snowstorm) Filter parameters
-  const currentFogColor = isBlizzard ? '#060913' : fogColor;
-  const dynamicFogNear = isBlizzard ? 0.5 : fogNear;
-  const dynamicFogFar = isBlizzard ? 20.0 : fogFar;
-  const stormBrightnessMultiplier = isBlizzard ? 0.65 : 1.0;
+  // Atmospheric Preset Parameters (Tenang / Berangin / Badai)
+  const isGentle = activePreset === 'gentle';
+
+  // Real-world overcast grayish sky color modeled after user photo for Tenang mode
+  const currentFogColor = isBlizzard
+    ? '#060913'
+    : isGentle
+      ? '#989fa7' // Overcast gray winter sky atmosphere matching the reference photo
+      : fogColor;
+
+  const dynamicFogNear = isBlizzard ? 0.5 : isGentle ? 10.0 : fogNear;
+  const dynamicFogFar = isBlizzard ? 20.0 : isGentle ? 70.0 : fogFar;
+  const stormBrightnessMultiplier = isBlizzard ? 0.65 : isGentle ? 1.1 : 1.0;
   const effectiveBrightness = brightness * stormBrightnessMultiplier;
 
   return (
     <div
-      className={`fixed inset-0 pointer-events-auto z-0 overflow-hidden bg-[#090d16] transition-all duration-500 ${
+      className={`fixed inset-0 pointer-events-auto z-0 overflow-hidden transition-all duration-700 ${
         isAlbumOpen ? 'blur-lg scale-105 brightness-90' : 'blur-none scale-100 brightness-100'
       }`}
+      style={{ backgroundColor: currentFogColor }}
     >
       <Canvas
         camera={{ position: [-26, 6, 33.5], fov: 45, near: 0.1, far: 1000 }}
@@ -133,33 +142,42 @@ export function SnowScene({
         <fog attach="fog" args={[currentFogColor, dynamicFogNear, dynamicFogFar]} />
 
         {/* Dynamic Dark/Light Filter - Ambient Light */}
-        <ambientLight intensity={0.6 * effectiveBrightness} color="#cbd5e1" />
+        <ambientLight
+          intensity={isGentle ? 0.85 : 0.6 * effectiveBrightness}
+          color={isGentle ? '#e5e7eb' : '#cbd5e1'}
+        />
 
         {/* Sky-to-Ground Hemispheric Lighting */}
-        <hemisphereLight args={['#38bdf8', '#1e1b4b', 0.9 * effectiveBrightness]} />
+        <hemisphereLight
+          args={[
+            isGentle ? '#a8afb7' : '#38bdf8',
+            isGentle ? '#64748b' : '#1e1b4b',
+            isGentle ? 0.85 : 0.9 * effectiveBrightness,
+          ]}
+        />
 
         {/* Primary Sun / Moon Directional Light with Brightness Control */}
         <directionalLight
           position={[25, 40, 20]}
-          intensity={1.2 * effectiveBrightness}
-          color="#ffffff"
+          intensity={isGentle ? 1.0 : 1.3 * effectiveBrightness}
+          color={isGentle ? '#f8fafc' : '#ffffff'}
           castShadow
           shadow-mapSize-width={512}
           shadow-mapSize-height={512}
         />
 
-        {/* Deep Sky-Blue Rim Accent Light */}
+        {/* Rim Light Accent - Muted cool slate for Tenang overcast gray sky */}
         <directionalLight
           position={[-25, 25, -20]}
-          intensity={0.9 * effectiveBrightness}
-          color="#0284c7"
+          intensity={isGentle ? 0.4 : 0.9 * effectiveBrightness}
+          color={isGentle ? '#94a3b8' : '#0284c7'}
         />
 
-        {/* Soft Aurora Accent Fill Light */}
+        {/* Soft Ambient Fill Light - Neutral soft gray fill for Tenang mode */}
         <pointLight
           position={[0, 15, 0]}
-          intensity={0.5 * effectiveBrightness}
-          color="#34d399"
+          intensity={isGentle ? 0.3 : 0.5 * effectiveBrightness}
+          color={isGentle ? '#e2e8f0' : '#34d399'}
           distance={45}
         />
 
@@ -208,7 +226,9 @@ export function SnowScene({
             treeScale={1.5}
             customTrees={[
               { position: [-12, -1.6, 25.4], scale: 2.3 }, // Pohon 1 (Area Depan Tengah)
-              { position: [-4, 2.3, 10], scale: 1.4 }, // Pohon 2 (Area Kiri Depan)
+              { position: [1, 2.5, 12], scale: 1 }, // Pohon 2 (Area Kiri Depan)
+              { position: [-4, 2, 10], scale: 1.4 }, // Pohon 2 (Area Kiri Depan)
+              { position: [-22, 5.3, 1], scale: 1 },
               { position: [-10, 1.75, 4], scale: 1.1 }, // Pohon 3 (Area Kanan Belakang)
               { position: [-23, 0.1, 23], scale: 1.5 },
               { position: [-2, 7, 3], scale: 0.6 }, // Pohon 4 (Area Dekat Kamera)

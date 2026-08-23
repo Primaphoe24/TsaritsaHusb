@@ -50,26 +50,13 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Clean Snow Controls Presets with Indonesian Labels (Tenang, Berangin, Badai) & Custom Active Colors */}
+        {/* Clean Snow Controls Presets with Indonesian Labels (Tenang, Berangin, Badai) & Light Blue Active Color */}
         <div className="relative flex items-center justify-center gap-0.5 sm:gap-1 bg-slate-900/50 p-0.5 sm:p-1 rounded-lg border border-white/15 shadow-lg backdrop-blur-md shrink-0">
           {presets.map((preset) => {
             const isActive = activePreset === preset.id;
 
-            // Custom dynamic active pill colors requested by user:
-            // Tenang = Biru Muda, Berangin = Biru Sedikit Gelap, Badai = Biru Gelap
-            let pillBg = 'bg-sky-400';
-            let activeTextColor = 'text-slate-950';
-
-            if (preset.id === 'gentle') {
-              pillBg = 'bg-sky-400 shadow-sky-400/30';
-              activeTextColor = 'text-slate-950 font-extrabold';
-            } else if (preset.id === 'moderate') {
-              pillBg = 'bg-blue-600 shadow-blue-600/40';
-              activeTextColor = 'text-white font-bold';
-            } else if (preset.id === 'blizzard') {
-              pillBg = 'bg-blue-950 border border-sky-400/40 shadow-blue-950/80';
-              activeTextColor = 'text-sky-200 font-bold';
-            }
+            const pillBg = 'bg-sky-400 shadow-sky-400/30';
+            const activeTextColor = 'text-slate-950 font-extrabold';
 
             return (
               <button
