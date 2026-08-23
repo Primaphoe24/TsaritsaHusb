@@ -76,7 +76,7 @@ function MinimalLoader() {
 
 /**
  * 3D Snow Scene Container Component.
- * Optimized for performance: Draco-compressed terrain & pine trees, 3D crystalline snowflakes at size 3.0, smooth fade-in loading transition.
+ * Features dynamic atmospheric storm filter when Badai preset is active.
  */
 export function SnowScene({
   brightness = 1.0,
@@ -92,14 +92,17 @@ export function SnowScene({
 }: SnowSceneProps) {
   const snowDensity = useStore((state) => state.snowDensity);
   const isAlbumOpen = useStore((state) => state.isAlbumOpen);
+  const isBlizzard = useStore((state) => state.isBlizzardMode);
 
   // Compute snow particles count based on store snowDensity (1000 in moderate, 4000 in blizzard)
   const activeSnowCount = snowCount ?? Math.round(1000 * snowDensity);
 
-  // Fog filter is kept 100% identical to Moderate mode across all presets
-  const currentFogColor = fogColor;
-  const dynamicFogNear = fogNear;
-  const dynamicFogFar = fogFar;
+  // Atmospheric Badai (Snowstorm) Filter parameters
+  const currentFogColor = isBlizzard ? '#070c18' : fogColor;
+  const dynamicFogNear = isBlizzard ? 1.0 : fogNear;
+  const dynamicFogFar = isBlizzard ? 28.0 : fogFar;
+  const stormBrightnessMultiplier = isBlizzard ? 0.75 : 1.0;
+  const effectiveBrightness = brightness * stormBrightnessMultiplier;
 
   return (
     <div
@@ -116,20 +119,20 @@ export function SnowScene({
           alpha: false,
         }}
       >
-        {/* Deep Winter Sky & Thick Atmospheric Fog */}
+        {/* Deep Winter Sky & Atmospheric Storm Fog */}
         <color attach="background" args={[currentFogColor]} />
         <fog attach="fog" args={[currentFogColor, dynamicFogNear, dynamicFogFar]} />
 
         {/* Dynamic Dark/Light Filter - Ambient Light */}
-        <ambientLight intensity={0.6 * brightness} color="#cbd5e1" />
+        <ambientLight intensity={0.6 * effectiveBrightness} color="#cbd5e1" />
 
         {/* Sky-to-Ground Hemispheric Lighting */}
-        <hemisphereLight args={['#38bdf8', '#1e1b4b', 0.9 * brightness]} />
+        <hemisphereLight args={['#38bdf8', '#1e1b4b', 0.9 * effectiveBrightness]} />
 
         {/* Primary Sun / Moon Directional Light with Brightness Control */}
         <directionalLight
           position={[25, 40, 20]}
-          intensity={1.2 * brightness}
+          intensity={1.2 * effectiveBrightness}
           color="#ffffff"
           castShadow
           shadow-mapSize-width={512}
@@ -137,12 +140,16 @@ export function SnowScene({
         />
 
         {/* Deep Sky-Blue Rim Accent Light */}
-        <directionalLight position={[-25, 25, -20]} intensity={0.9 * brightness} color="#0284c7" />
+        <directionalLight
+          position={[-25, 25, -20]}
+          intensity={0.9 * effectiveBrightness}
+          color="#0284c7"
+        />
 
         {/* Soft Aurora Accent Fill Light */}
         <pointLight
           position={[0, 15, 0]}
-          intensity={0.5 * brightness}
+          intensity={0.5 * effectiveBrightness}
           color="#34d399"
           distance={45}
         />

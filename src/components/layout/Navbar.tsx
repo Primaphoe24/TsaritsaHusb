@@ -7,14 +7,14 @@ import { AudioPlayer } from '@/components/ui/AudioPlayer';
 import { PhotoAlbumModal } from '@/components/ui/PhotoAlbumModal';
 
 const presets = [
-  { id: 'gentle', label: 'Gentle' },
-  { id: 'moderate', label: 'Moderate' },
-  { id: 'blizzard', label: 'Blizzard' },
+  { id: 'gentle', label: 'Tenang' },
+  { id: 'moderate', label: 'Berangin' },
+  { id: 'blizzard', label: 'Badai' },
 ] as const;
 
 /**
  * Flush Top Navigation Bar directly attached to top of browser window.
- * Styled with a bright, semi-transparent frosted glass aesthetic and smooth sliding active pill animation.
+ * Features Bahasa Indonesia labels (Tenang, Berangin, Badai) and smooth sliding active pill animation.
  */
 export function Navbar() {
   const activePreset = useStore((state) => state.activePreset);
@@ -50,7 +50,7 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Clean Snow Controls Presets with Smooth Sliding Pill Indicator */}
+        {/* Clean Snow Controls Presets with Indonesian Labels (Tenang, Berangin, Badai) & Smooth Sliding Pill */}
         <div className="relative flex items-center justify-center gap-0.5 sm:gap-1 bg-slate-900/50 p-0.5 sm:p-1 rounded-lg border border-white/15 shadow-lg backdrop-blur-md shrink-0">
           {presets.map((preset) => {
             const isActive = activePreset === preset.id;
