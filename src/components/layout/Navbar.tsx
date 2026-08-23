@@ -50,27 +50,40 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Clean Snow Controls Presets with Indonesian Labels (Tenang, Berangin, Badai) & Smooth Sliding Pill */}
+        {/* Clean Snow Controls Presets with Indonesian Labels (Tenang, Berangin, Badai) & Custom Active Colors */}
         <div className="relative flex items-center justify-center gap-0.5 sm:gap-1 bg-slate-900/50 p-0.5 sm:p-1 rounded-lg border border-white/15 shadow-lg backdrop-blur-md shrink-0">
           {presets.map((preset) => {
             const isActive = activePreset === preset.id;
+
+            // Custom dynamic active pill colors requested by user:
+            // Tenang = Biru Muda, Berangin = Biru Sedikit Gelap, Badai = Biru Gelap
+            let pillBg = 'bg-sky-400';
+            let activeTextColor = 'text-slate-950';
+
+            if (preset.id === 'gentle') {
+              pillBg = 'bg-sky-400 shadow-sky-400/30';
+              activeTextColor = 'text-slate-950 font-extrabold';
+            } else if (preset.id === 'moderate') {
+              pillBg = 'bg-blue-600 shadow-blue-600/40';
+              activeTextColor = 'text-white font-bold';
+            } else if (preset.id === 'blizzard') {
+              pillBg = 'bg-blue-950 border border-sky-400/40 shadow-blue-950/80';
+              activeTextColor = 'text-sky-200 font-bold';
+            }
+
             return (
               <button
                 key={preset.id}
                 onClick={() => setActivePreset(preset.id)}
-                className={`relative px-2.5 sm:px-4 py-1 text-[10px] sm:text-xs font-semibold rounded-md transition-colors z-10 ${
-                  isActive ? 'text-slate-950 font-bold' : 'text-slate-300 hover:text-white'
+                className={`relative px-2.5 sm:px-4 py-1 text-[10px] sm:text-xs rounded-md transition-colors z-10 ${
+                  isActive ? activeTextColor : 'text-slate-300 hover:text-white font-semibold'
                 }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activePresetPill"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    className={`absolute inset-0 rounded-md -z-10 shadow-md ${
-                      preset.id === 'blizzard'
-                        ? 'bg-gradient-to-r from-sky-400 to-teal-300'
-                        : 'bg-sky-400'
-                    }`}
+                    className={`absolute inset-0 rounded-md -z-10 shadow-md ${pillBg}`}
                   />
                 )}
                 <span className="relative z-10">{preset.label}</span>

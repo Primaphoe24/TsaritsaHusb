@@ -8,6 +8,7 @@ import { SnowParticles } from '../objects/SnowParticles';
 import { SnowAccumulation } from '../objects/SnowAccumulation';
 import { Forest } from '../objects/Tree';
 import { Ground } from '../objects/Ground';
+import { Snowman } from '../objects/Snowman';
 import { useStore } from '@/store/useStore';
 
 export interface SnowSceneProps {
@@ -91,17 +92,25 @@ export function SnowScene({
   groundGrowthSpeed = 0.3,
 }: SnowSceneProps) {
   const snowDensity = useStore((state) => state.snowDensity);
+  const activePreset = useStore((state) => state.activePreset);
   const isAlbumOpen = useStore((state) => state.isAlbumOpen);
   const isBlizzard = useStore((state) => state.isBlizzardMode);
 
-  // Compute snow particles count based on store snowDensity (1000 in moderate, 8000 in blizzard)
+  // Compute snow particles count (4000 in moderate, 12000 in blizzard)
   const activeSnowCount = snowCount ?? Math.round(1000 * snowDensity);
 
+  // Accelerated falling speed during intense blizzard for realistic snowstorm dynamics
+  const effectiveSnowSpeed = isBlizzard
+    ? snowSpeed * 3.5
+    : activePreset === 'moderate'
+      ? snowSpeed * 1.6
+      : snowSpeed;
+
   // Atmospheric Badai (Snowstorm) Filter parameters
-  const currentFogColor = isBlizzard ? '#070c18' : fogColor;
-  const dynamicFogNear = isBlizzard ? 1.0 : fogNear;
-  const dynamicFogFar = isBlizzard ? 28.0 : fogFar;
-  const stormBrightnessMultiplier = isBlizzard ? 0.75 : 1.0;
+  const currentFogColor = isBlizzard ? '#060913' : fogColor;
+  const dynamicFogNear = isBlizzard ? 0.5 : fogNear;
+  const dynamicFogFar = isBlizzard ? 20.0 : fogFar;
+  const stormBrightnessMultiplier = isBlizzard ? 0.65 : 1.0;
   const effectiveBrightness = brightness * stormBrightnessMultiplier;
 
   return (
@@ -162,12 +171,28 @@ export function SnowScene({
           <SnowParticles
             count={activeSnowCount}
             size={snowSize}
-            speed={snowSpeed}
+            speed={effectiveSnowSpeed}
             wind={0.6}
             areaX={90}
             areaZ={90}
             minY={1.2}
             maxY={40}
+          />
+
+          {/* 3D Snowman 1 */}
+          <Snowman
+            modelUrl="/assets/models/snowman.glb"
+            position={[-15, -0.35, 27.5]}
+            rotationDeg={300}
+            scale={0.75}
+          />
+
+          {/* 3D Snowman 2 */}
+          <Snowman
+            modelUrl="/assets/models/snowman2.glb"
+            position={[-19, 2, 19]}
+            rotationDeg={10}
+            scale={0.75}
           />
 
           {/* Real-Time 3D Ground Snow Accumulation */}
@@ -183,8 +208,8 @@ export function SnowScene({
             treeScale={1.5}
             customTrees={[
               { position: [-12, -1, 24], scale: 2 }, // Pohon 1 (Area Depan Tengah)
-              { position: [-4, 2.3, 10], scale: 1.2 }, // Pohon 2 (Area Kiri Depan)
-              { position: [-10, 2.3, 4], scale: 1.1 }, // Pohon 3 (Area Kanan Belakang)
+              { position: [-4, 2.3, 10], scale: 1.4 }, // Pohon 2 (Area Kiri Depan)
+              { position: [-10, 1.75, 4], scale: 1.1 }, // Pohon 3 (Area Kanan Belakang)
               { position: [-23, 0.1, 23], scale: 1.4 },
               { position: [-2, 7, 3], scale: 0.6 }, // Pohon 4 (Area Dekat Kamera)
               { position: [-19, 0, 32], scale: 1.5 },

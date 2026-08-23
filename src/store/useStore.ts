@@ -26,8 +26,8 @@ export const useStore = create<AppState>((set) => ({
   setBlizzardMode: (enabled) =>
     set((state) => ({
       isBlizzardMode: enabled,
-      snowDensity: enabled ? 8.0 : 1.0,
-      windSpeed: enabled ? 2.8 : 0.4,
+      snowDensity: enabled ? 12.0 : 1.0,
+      windSpeed: enabled ? 4.8 : 0.4,
       activePreset: enabled ? 'blizzard' : state.activePreset,
     })),
 
@@ -37,10 +37,10 @@ export const useStore = create<AppState>((set) => ({
         set({ activePreset: 'gentle', snowDensity: 0.4, windSpeed: 0.15, isBlizzardMode: false });
         break;
       case 'moderate':
-        set({ activePreset: 'moderate', snowDensity: 1.0, windSpeed: 0.4, isBlizzardMode: false });
+        set({ activePreset: 'moderate', snowDensity: 4.0, windSpeed: 1.5, isBlizzardMode: false });
         break;
       case 'blizzard':
-        set({ activePreset: 'blizzard', snowDensity: 8.0, windSpeed: 2.8, isBlizzardMode: true });
+        set({ activePreset: 'blizzard', snowDensity: 12.0, windSpeed: 4.8, isBlizzardMode: true });
         break;
     }
   },
