@@ -207,10 +207,10 @@ export function SnowScene({
             modelUrl="/assets/models/pine_tree.glb"
             treeScale={1.5}
             customTrees={[
-              { position: [-12, -1, 24], scale: 2 }, // Pohon 1 (Area Depan Tengah)
+              { position: [-12, -1.6, 25.4], scale: 2.3 }, // Pohon 1 (Area Depan Tengah)
               { position: [-4, 2.3, 10], scale: 1.4 }, // Pohon 2 (Area Kiri Depan)
               { position: [-10, 1.75, 4], scale: 1.1 }, // Pohon 3 (Area Kanan Belakang)
-              { position: [-23, 0.1, 23], scale: 1.4 },
+              { position: [-23, 0.1, 23], scale: 1.5 },
               { position: [-2, 7, 3], scale: 0.6 }, // Pohon 4 (Area Dekat Kamera)
               { position: [-19, 0, 32], scale: 1.5 },
               { position: [-26, 0, 26], scale: 1.2 },
