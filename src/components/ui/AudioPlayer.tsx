@@ -9,6 +9,7 @@ export interface AudioPlayerProps {
 
 /**
  * Music Note Button & Background Audio Player Component using Lucide icons.
+ * Features sharp diamond Play/Pause button, custom active volume trail, and bright frosted glass container.
  */
 export function AudioPlayer({ audioSrc = '/assets/audio/winter_romance.mp3' }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -67,47 +68,48 @@ export function AudioPlayer({ audioSrc = '/assets/audio/winter_romance.mp3' }: A
 
       {/* Popover Audio Controls */}
       {isPopoverOpen && (
-        <div className="absolute right-0 mt-3 w-60 rounded-2xl border border-white/15 bg-slate-950/90 p-4 shadow-2xl backdrop-blur-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+        <div className="absolute right-0 mt-3 w-64 rounded-lg border border-white/25 bg-slate-800/40 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-3xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-white">
+          <div className="flex items-center justify-between mb-3 border-b border-white/20 pb-2">
             <div className="flex items-center gap-2">
               <Music className="w-3.5 h-3.5 text-sky-400" />
-              <span className="text-xs font-semibold text-white">Musik Latar</span>
+              <span className="text-xs font-semibold text-white">Putar Musik</span>
             </div>
             <button
               onClick={() => setIsPopoverOpen(false)}
-              className="text-slate-400 hover:text-white transition-colors"
+              className="text-slate-300 hover:text-white transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Play/Pause Button & Title */}
-          <div className="flex items-center gap-3 mb-3">
+          {/* Sharp Diamond Play/Pause Button & Title */}
+          <div className="flex items-center gap-4 mb-3.5 px-1">
+            {/* Belah Ketupat Runcing (Sharp Rhombus / Diamond) Play/Pause Button */}
             <button
               onClick={togglePlay}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-400 to-teal-300 text-slate-950 font-bold shadow-md shadow-sky-500/20 hover:scale-105 active:scale-95 transition-all"
+              className="relative flex h-8 w-8 shrink-0 items-center justify-center rotate-45 rounded-sm bg-gradient-to-tr from-sky-400 via-teal-300 to-sky-200 text-slate-950 font-bold shadow-md shadow-sky-500/30 border border-white/40 hover:scale-110 active:scale-95 transition-all my-1.5 ml-1"
             >
               {isPlaying ? (
-                <Pause className="w-4 h-4 fill-current" />
+                <Pause className="-rotate-45 w-3.5 h-3.5 fill-current text-slate-950" />
               ) : (
-                <Play className="w-4 h-4 fill-current ml-0.5" />
+                <Play className="-rotate-45 w-3.5 h-3.5 fill-current text-slate-950 ml-0.5" />
               )}
             </button>
-            <div className="overflow-hidden">
-              <p className="text-xs font-medium text-white truncate">
-                {isPlaying ? 'Memutar Musik Winter' : 'Putar Musik Winter'}
+            <div className="overflow-hidden ml-1">
+              <p className="text-xs font-bold text-white truncate leading-tight">
+                {isPlaying ? 'Memutar Musik Winter' : 'Snezhnaya Audio Track'}
               </p>
-              <p className="text-[10px] text-slate-400">Atmospheric Audio Track</p>
+              <p className="text-[10px] text-slate-200 mt-0.5">Dingin membeku</p>
             </div>
           </div>
 
-          {/* Volume Slider */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-[10px] text-slate-400">
+          {/* Custom Volume Slider with Active Gradient Trail */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-[10px] text-slate-200 font-medium">
               <span className="flex items-center gap-1">
-                <Volume2 className="w-3 h-3 text-slate-400" /> Volume
+                <Volume2 className="w-3 h-3 text-sky-400" /> Volume
               </span>
-              <span>{Math.round(volume * 100)}%</span>
+              <span className="font-mono text-sky-300">{Math.round(volume * 100)}%</span>
             </div>
             <input
               type="range"
@@ -116,7 +118,12 @@ export function AudioPlayer({ audioSrc = '/assets/audio/winter_romance.mp3' }: A
               step="0.01"
               value={volume}
               onChange={handleVolumeChange}
-              className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-400"
+              style={{
+                background: `linear-gradient(to right, #38bdf8 0%, #2dd4bf ${
+                  volume * 100
+                }%, rgba(255, 255, 255, 0.2) ${volume * 100}%, rgba(255, 255, 255, 0.2) 100%)`,
+              }}
+              className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-sky-400 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-sky-400 [&::-webkit-slider-thumb]:shadow-[0_0_10px_#38bdf8] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white transition-all"
             />
           </div>
         </div>

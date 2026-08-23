@@ -14,7 +14,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Aethelgard | 3D Interactive Winter Wonderland Experience',
+  title: 'Tsaritsa | Tsaritsa Husband',
   description:
     'High-performance real-time 3D WebGL winter experience powered by Next.js 16, React Three Fiber, GSAP, and Framer Motion.',
   keywords: [
