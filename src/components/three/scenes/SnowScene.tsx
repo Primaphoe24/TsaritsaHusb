@@ -94,7 +94,7 @@ export function SnowScene({
   const isAlbumOpen = useStore((state) => state.isAlbumOpen);
   const isBlizzard = useStore((state) => state.isBlizzardMode);
 
-  // Compute snow particles count based on store snowDensity (1000 in moderate, 4000 in blizzard)
+  // Compute snow particles count based on store snowDensity (1000 in moderate, 8000 in blizzard)
   const activeSnowCount = snowCount ?? Math.round(1000 * snowDensity);
 
   // Atmospheric Badai (Snowstorm) Filter parameters
