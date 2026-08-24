@@ -55,7 +55,7 @@ export function Navbar() {
           {presets.map((preset) => {
             const isActive = activePreset === preset.id;
 
-            const pillBg = 'bg-sky-400 shadow-sky-400/30';
+            const pillBg = 'bg-white shadow-[0_0_16px_rgba(255,255,255,0.85)] border border-white';
             const activeTextColor = 'text-slate-950 font-extrabold';
 
             return (

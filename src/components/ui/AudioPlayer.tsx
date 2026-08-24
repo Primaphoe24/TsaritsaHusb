@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Music, Play, Pause, Volume2, X } from 'lucide-react';
+import { Music, Play, Pause, Volume2 } from 'lucide-react';
+import { SnowflakeXIcon } from './SnowflakeXIcon';
 
 export interface AudioPlayerProps {
   audioSrc?: string; // Path file audio (default: '/assets/audio/winter_romance.mp3')
@@ -48,11 +49,11 @@ export function AudioPlayer({ audioSrc = '/assets/audio/winter_romance.mp3' }: A
       {/* Music Note Trigger Button */}
       <button
         onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-        title="Pemutar Musik Background"
-        className={`relative flex items-center justify-center h-9 w-9 rounded-lg border transition-all ${
+        title="Musik Latar Belakang"
+        className={`relative flex items-center justify-center h-9 w-9 transition-all ${
           isPlaying
-            ? 'bg-sky-500/20 border-sky-400/50 text-sky-300 shadow-md shadow-sky-500/20'
-            : 'bg-slate-900/80 border-white/10 text-slate-300 hover:text-white hover:border-white/20'
+            ? 'text-sky-300 shadow-md shadow-sky-500/20'
+            : 'text-slate-300 hover:text-white hover:border-white/20'
         }`}
       >
         {isPlaying ? (
@@ -76,9 +77,9 @@ export function AudioPlayer({ audioSrc = '/assets/audio/winter_romance.mp3' }: A
             </div>
             <button
               onClick={() => setIsPopoverOpen(false)}
-              className="text-slate-300 hover:text-white transition-colors"
+              className="group text-slate-300 hover:text-white transition-colors p-0.5"
             >
-              <X className="w-3.5 h-3.5" />
+              <SnowflakeXIcon className="w-3.5 h-3.5 text-sky-200 group-hover:text-white group-hover:rotate-90 transition-transform duration-300" />
             </button>
           </div>
 
