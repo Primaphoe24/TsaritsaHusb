@@ -12,10 +12,6 @@ interface GroundProps {
   rotation?: [number, number, number];
 }
 
-/**
- * Custom 3D Terrain GLTF Model Loader with Draco decompression support.
- * Uses Google's fast official Draco decoder CDN (or true flag) for instant decoding.
- */
 function GLTFGroundModel({
   url,
   scale = 1.0,
@@ -35,7 +31,7 @@ function GLTFGroundModel({
     cloned.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         child.receiveShadow = true;
-        child.castShadow = false; // Terrain does not need to cast shadows (perf)
+        child.castShadow = false;
       }
     });
 
@@ -47,10 +43,6 @@ function GLTFGroundModel({
   );
 }
 
-/**
- * Procedural Snow Mountain Terrain Generator.
- * Creates dramatic snowy mountain ridges, valley basins, and rolling snowdrifts.
- */
 function ProceduralGround({
   size = 80,
   position = [0, 0, 0],
@@ -69,11 +61,9 @@ function ProceduralGround({
       const x = pos.getX(i);
       const z = pos.getZ(i);
 
-      // Radial distance from center so center is flatter for trees & UI
       const distFromCenter = Math.sqrt(x * x + z * z);
       const ridgeFactor = Math.min(1.0, distFromCenter / 20.0);
 
-      // Multi-octave mountain ridge elevation calculation
       const elevation =
         (Math.sin(x * 0.12) * Math.cos(z * 0.12) * 2.2 +
           Math.sin(x * 0.28 + 1.2) * 0.9 +
@@ -100,10 +90,6 @@ function ProceduralGround({
   );
 }
 
-/**
- * Snowy Ground Terrain Component.
- * Supports importing Draco-compressed GLTF terrain models or procedural snow-mountain ridges.
- */
 export function Ground({
   size = 80,
   modelUrl,

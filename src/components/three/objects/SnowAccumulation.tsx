@@ -6,9 +6,9 @@ import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export interface SnowAccumulationProps {
-  count?: number; // Jumlah titik tumpukan salju di tanah (default: 35)
-  maxGrowthScale?: number; // Skala tumpukan maksimal (default: 1.0)
-  growthSpeed?: number; // Kecepatan terkumpulnya salju di tanah (default: 0.3)
+  count?: number;
+  maxGrowthScale?: number;
+  growthSpeed?: number;
 }
 
 function pseudoRandom(seed: number): number {
@@ -16,21 +16,16 @@ function pseudoRandom(seed: number): number {
   return x - Math.floor(x);
 }
 
-/**
- * Procedural 3D Organic Snow Mound / Snow Drift Geometry Generator.
- * Creates smooth volumetric snow drifts sitting flat on ground terrain.
- */
 function createSnowMoundGeometry(): THREE.BufferGeometry {
   const base = new THREE.DodecahedronGeometry(0.8, 2);
 
-  // Flatten bottom slightly so mound sits naturally on terrain
   const pos = base.attributes.position;
   for (let i = 0; i < pos.count; i++) {
     const y = pos.getY(i);
     if (y < 0) {
-      pos.setY(i, y * 0.35); // Flatten bottom base
+      pos.setY(i, y * 0.35);
     } else {
-      pos.setY(i, y * 0.65); // Soft dome top
+      pos.setY(i, y * 0.65);
     }
   }
 
@@ -45,10 +40,6 @@ function createSnowMoundGeometry(): THREE.BufferGeometry {
   return merged;
 }
 
-/**
- * Real-Time 3D Ground Snow Accumulation Component.
- * Gradually forms realistic snow mounds & snow drifts on the terrain surface as snowflakes hit the ground.
- */
 export function SnowAccumulation({
   count = 35,
   maxGrowthScale = 1.0,
@@ -59,7 +50,6 @@ export function SnowAccumulation({
 
   const moundGeometry = useMemo(() => createSnowMoundGeometry(), []);
 
-  // Mutable animation state stored in useRef to satisfy React Hooks Immutability rules
   const moundsRef = useRef<{
     pos: Float32Array;
     rotY: Float32Array;
@@ -95,7 +85,6 @@ export function SnowAccumulation({
     moundsRef.current = { pos, rotY, targetScales, currentScales };
   }, [count, maxGrowthScale]);
 
-  // Frame loop — gradually accumulates/grows snow mounds on ground as snowflakes fall
   useFrame((_, delta) => {
     if (!meshRef.current || !moundsRef.current) return;
 

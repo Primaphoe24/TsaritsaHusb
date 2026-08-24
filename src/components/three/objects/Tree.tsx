@@ -11,24 +11,17 @@ interface TreeProps {
   scale?: [number, number, number] | number;
   rotationY?: number;
   seed?: number;
-  modelUrl?: string; // Optional path to custom .glb model (e.g., '/assets/models/pine_tree.glb')
+  modelUrl?: string;
   baseScale?: number;
+  disableAnimation?: boolean;
 }
 
-/**
- * Pure seed-based pseudo-random generator.
- */
 function getSeedRandom(seed: number): number {
   const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
   return x - Math.floor(x);
 }
 
-/**
- * Procedural Realistic HD Pine Tree Foliage & Branch Tier Generator.
- * Creates an organic evergreen pine structure with detailed branch nodes, sub-branchlets, and realistic snow deposits.
- */
 function HDProceduralTree({ seed = 42 }: { seed: number }) {
-  // Generate organic tree structure parameters based on seed
   const structure = useMemo(() => {
     const tiers = 7;
     const tierData = [];
@@ -37,19 +30,18 @@ function HDProceduralTree({ seed = 42 }: { seed: number }) {
     const baseRadius = 0.35 + getSeedRandom(seed + 1) * 0.1;
 
     for (let t = 0; t < tiers; t++) {
-      const progress = t / (tiers - 1); // 0 at bottom, 1 at top
+      const progress = t / (tiers - 1);
       const heightY = 1.0 + progress * (trunkHeight - 1.2);
       const tierRadius = (1.0 - progress * 0.75) * (2.2 + getSeedRandom(seed + t * 3) * 0.6);
-      const branchCount = Math.floor(6 - progress * 3); // 6 branches at bottom, 3 at top
+      const branchCount = Math.floor(6 - progress * 3);
 
       const branches = [];
       for (let b = 0; b < branchCount; b++) {
         const angle =
           (b / branchCount) * Math.PI * 2 + (getSeedRandom(seed + t * 10 + b) - 0.5) * 0.4;
-        const droop = 0.2 + (1 - progress) * 0.25 + getSeedRandom(seed + b * 7) * 0.1; // branch downward tilt angle
+        const droop = 0.2 + (1 - progress) * 0.25 + getSeedRandom(seed + b * 7) * 0.1;
         const length = tierRadius * (0.85 + getSeedRandom(seed + t + b) * 0.3);
 
-        // Sub-branchlets along main branch
         const branchlets = [];
         const subCount = 3;
         for (let s = 0; s < subCount; s++) {
@@ -71,7 +63,6 @@ function HDProceduralTree({ seed = 42 }: { seed: number }) {
     return { trunkHeight, baseRadius, tierData };
   }, [seed]);
 
-  // Generate organic bark cylinder geometry with natural height bends
   const trunkGeometry = useMemo(() => {
     const geo = new THREE.CylinderGeometry(
       0.12,
@@ -86,7 +77,6 @@ function HDProceduralTree({ seed = 42 }: { seed: number }) {
     for (let i = 0; i < pos.count; i++) {
       const y = pos.getY(i);
       const normY = y / structure.trunkHeight;
-      // Slight natural organic curve along height
       const bendX = Math.sin(normY * Math.PI * 1.5) * 0.15 * getSeedRandom(seed + 99);
       const bendZ = Math.cos(normY * Math.PI * 1.2) * 0.12 * getSeedRandom(seed + 100);
       pos.setX(i, pos.getX(i) + bendX);
@@ -98,17 +88,14 @@ function HDProceduralTree({ seed = 42 }: { seed: number }) {
 
   return (
     <group>
-      {/* Organic Trunk with Bark Material */}
       <mesh geometry={trunkGeometry} castShadow receiveShadow>
         <meshStandardMaterial color="#2a1810" roughness={0.95} metalness={0.05} />
       </mesh>
 
-      {/* Realistic Branch Tiers & Snow Pillows */}
       {structure.tierData.map((tier, tIdx) => (
         <group key={tIdx} position={[0, tier.heightY, 0]}>
           {tier.branches.map((branch, bIdx) => (
             <group key={bIdx} rotation={[0, branch.angle, -branch.droop]}>
-              {/* Main Branch Wooden Limb */}
               <mesh
                 position={[branch.length * 0.5, 0, 0]}
                 rotation={[0, 0, Math.PI / 2]}
@@ -118,7 +105,6 @@ function HDProceduralTree({ seed = 42 }: { seed: number }) {
                 <meshStandardMaterial color="#362217" roughness={0.9} />
               </mesh>
 
-              {/* Main Branch Needle Foliage */}
               <mesh
                 position={[branch.length * 0.55, 0, 0]}
                 scale={[branch.length * 0.5, 0.35, 0.55]}
@@ -133,7 +119,6 @@ function HDProceduralTree({ seed = 42 }: { seed: number }) {
                 />
               </mesh>
 
-              {/* Soft Fluffy Snow Deposits sitting on top of branch */}
               <mesh
                 position={[branch.length * 0.55, 0.18, 0]}
                 scale={[branch.length * 0.48, 0.22, 0.48]}
@@ -149,14 +134,12 @@ function HDProceduralTree({ seed = 42 }: { seed: number }) {
                 />
               </mesh>
 
-              {/* Sub-Branchlets extending outwards */}
               {branch.branchlets.map((bl, subIdx) => (
                 <group
                   key={subIdx}
                   position={[bl.dist, 0, 0]}
                   rotation={[bl.spreadAngle * bl.side, 0, 0]}
                 >
-                  {/* Sub-branchlet Foliage Cluster */}
                   <mesh
                     position={[0.3, 0, 0]}
                     scale={[0.6 * bl.scale, 0.25 * bl.scale, 0.45 * bl.scale]}
@@ -167,7 +150,6 @@ function HDProceduralTree({ seed = 42 }: { seed: number }) {
                     <meshStandardMaterial color="#1a422d" roughness={0.7} flatShading />
                   </mesh>
 
-                  {/* Sub-branchlet Snow Cap */}
                   <mesh
                     position={[0.3, 0.12, 0]}
                     scale={[0.55 * bl.scale, 0.15 * bl.scale, 0.4 * bl.scale]}
@@ -188,7 +170,6 @@ function HDProceduralTree({ seed = 42 }: { seed: number }) {
         </group>
       ))}
 
-      {/* Top Pinnacle Snow Cap */}
       <mesh position={[0, structure.trunkHeight + 0.2, 0]} castShadow>
         <coneGeometry args={[0.35, 0.9, 6]} />
         <meshStandardMaterial
@@ -202,11 +183,6 @@ function HDProceduralTree({ seed = 42 }: { seed: number }) {
   );
 }
 
-/**
- * External GLTF Model Loader with Automatic Bounding Box Normalization.
- * Automatically rescales any imported GLTF model to ~5.0 units tall and aligns its base to origin.
- * Preserves original GLTF materials 100% untouched.
- */
 function GLTFTreeModel({
   url,
   scale,
@@ -221,7 +197,6 @@ function GLTFTreeModel({
   const { normalizedScene, normalizedScale } = useMemo(() => {
     const cloned = scene.clone(true);
 
-    // Compute bounding box of imported model
     const bbox = new THREE.Box3().setFromObject(cloned);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -229,10 +204,8 @@ function GLTFTreeModel({
     const maxDim = Math.max(size.x, size.y, size.z);
     const normalizeFactor = maxDim > 0 ? (5.0 / maxDim) * baseScaleMultiplier : baseScaleMultiplier;
 
-    // Align bottom base of model to origin y = 0
     cloned.position.y = -bbox.min.y;
 
-    // Enable shadows on all meshes without modifying any materials
     cloned.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         child.castShadow = true;
@@ -252,10 +225,6 @@ function GLTFTreeModel({
   return <primitive object={normalizedScene} scale={normalizedScale} />;
 }
 
-/**
- * Organic Snow-Covered Pine Tree Component.
- * Features natural, smooth, and gentle tree sway animation scaled down to globalWindSpeed.
- */
 export function Tree({
   position = [0, 0, 0],
   scale = 1,
@@ -263,17 +232,16 @@ export function Tree({
   seed = 42,
   modelUrl,
   baseScale = 1.0,
+  disableAnimation = false,
 }: TreeProps) {
   const groupRef = useRef<THREE.Group>(null);
   const globalWindSpeed = useStore((state) => state.windSpeed);
   const numericScale = typeof scale === 'number' ? [scale, scale, scale] : scale;
   const swayOffset = useMemo(() => getSeedRandom(seed) * Math.PI * 2, [seed]);
 
-  // Gentle and smooth natural tree sway animation
   useFrame((state) => {
-    if (!groupRef.current) return;
+    if (disableAnimation || !groupRef.current) return;
     const time = state.clock.getElapsedTime();
-    // Gentle frequency (0.7 to 1.25 rad/s) & natural sway amplitude
     const speedFactor = 0.7 + globalWindSpeed * 0.25;
     const swayAmount = 0.008 + globalWindSpeed * 0.012;
     const swayZ = Math.sin(time * speedFactor + swayOffset) * swayAmount;
@@ -304,25 +272,22 @@ export interface TreePlacement {
   position: [number, number, number];
   scale?: number;
   rotationY?: number;
+  disableAnimation?: boolean;
 }
 
 interface ForestProps {
   modelUrl?: string;
   treeScale?: number;
   count?: number;
-  radiusRange?: [number, number]; // [minRadius, maxRadius] for cluster
-  customTrees?: TreePlacement[]; // Optional array of custom [x, y, z] tree coordinates
+  radiusRange?: [number, number];
+  customTrees?: TreePlacement[];
 }
 
-/**
- * Forest Component — renders a cluster of HD pine trees on the 3D map.
- * Supports custom coordinate placement array or randomized inward clustering.
- */
 export function Forest({
   modelUrl,
   treeScale = 1.0,
   count = 12,
-  radiusRange = [3, 11], // Controlled radius so trees stay centered on map
+  radiusRange = [3, 11],
   customTrees,
 }: ForestProps) {
   const trees = useMemo(() => {
@@ -333,6 +298,7 @@ export function Forest({
         scale: t.scale ?? 1.0,
         rot: t.rotationY ?? getSeedRandom(i * 19) * Math.PI * 2,
         seed: i * 83 + 17,
+        disableAnimation: t.disableAnimation ?? false,
       }));
     }
 
@@ -358,6 +324,7 @@ export function Forest({
         scale,
         rot,
         seed: i * 83 + 17,
+        disableAnimation: false,
       });
     }
     return arr;
@@ -374,6 +341,7 @@ export function Forest({
           seed={t.seed}
           modelUrl={modelUrl}
           baseScale={treeScale}
+          disableAnimation={t.disableAnimation}
         />
       ))}
     </group>

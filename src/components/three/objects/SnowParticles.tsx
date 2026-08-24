@@ -8,28 +8,20 @@ import { useStore } from '@/store/useStore';
 
 export interface SnowParticlesProps {
   count?: number;
-  size?: number; // Multiplier ukuran butiran salju (default: 3.0)
-  speed?: number; // Multiplier kecepatan jatuh (default: 1.0)
-  wind?: number; // Kecepatan dorongan angin (default: 0.6)
-  areaX?: number; // Lebar area sebaran (default: 90)
-  areaZ?: number; // Kedalaman area sebaran (default: 90)
-  minY?: number; // Batas permukaan tanah tempat salju mendarat (default: 1.2)
-  maxY?: number; // Batas paling atas tempat salju mulai jatuh (default: 40.0)
+  size?: number;
+  speed?: number;
+  wind?: number;
+  areaX?: number;
+  areaZ?: number;
+  minY?: number;
+  maxY?: number;
 }
 
-/**
- * Pure pseudo-random generator based on seed index.
- */
 function pseudoRandom(seed: number): number {
   const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
   return x - Math.floor(x);
 }
 
-/**
- * Procedural 3D Crystalline Snowflake Mesh Generator.
- * Constructs an intricate 6-arm 3D snow crystal structure with central hex core and lateral spikes.
- * Disposes intermediate sub-geometries to prevent memory leaks.
- */
 function create3DSnowflakeGeometry(): THREE.BufferGeometry {
   const geometries: THREE.BufferGeometry[] = [];
 
@@ -81,7 +73,6 @@ function create3DSnowflakeGeometry(): THREE.BufferGeometry {
 
   const merged = BufferGeometryUtils.mergeGeometries(geometries);
 
-  // Dispose all intermediate arm geometries
   geometries.forEach((g) => g.dispose());
 
   if (merged) {
@@ -92,10 +83,6 @@ function create3DSnowflakeGeometry(): THREE.BufferGeometry {
   return new THREE.BoxGeometry(0.2, 0.2, 0.2);
 }
 
-/**
- * 3D Snowflake System using THREE.InstancedMesh.
- * Restored intricate 6-arm crystalline snowflake geometry and size 3.0 scale.
- */
 export function SnowParticles({
   count,
   size = 3.0,
@@ -109,22 +96,18 @@ export function SnowParticles({
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
-  // Read dynamic store properties
   const isMobile = useStore((state) => state.isMobile);
   const globalSnowDensity = useStore((state) => state.snowDensity);
   const globalWindSpeed = useStore((state) => state.windSpeed);
 
-  // Determine instance count
   const particleCount = useMemo(() => {
     if (count) return count;
     const base = isMobile ? 300 : 750;
     return Math.floor(base * globalSnowDensity);
   }, [count, isMobile, globalSnowDensity]);
 
-  // Create 3D Snowflake crystal geometry
   const snowflakeGeometry = useMemo(() => create3DSnowflakeGeometry(), []);
 
-  // Ref buffer for mutable particle frame-by-frame simulation
   const particlesRef = useRef<{
     pos: Float32Array;
     vel: Float32Array;
@@ -134,7 +117,6 @@ export function SnowParticles({
     swayPhase: Float32Array;
   } | null>(null);
 
-  // Initialize particle buffers
   useLayoutEffect(() => {
     const pos = new Float32Array(particleCount * 3);
     const vel = new Float32Array(particleCount * 3);
@@ -174,12 +156,10 @@ export function SnowParticles({
     particlesRef.current = { pos, vel, rot, rotVel, scales, swayPhase };
   }, [particleCount, speed, size, areaX, areaZ, minY, maxY]);
 
-  // Pre-compute constants outside loop
   const halfAreaX = areaX / 2;
   const halfAreaZ = areaZ / 2;
   const fadeDist = 2.5;
 
-  // Frame loop animation for tumbling 3D snowflakes
   useFrame((state, delta) => {
     if (!meshRef.current || !particlesRef.current) return;
 
@@ -206,7 +186,6 @@ export function SnowParticles({
       rot[idx + 1] += rotVel[idx + 1] * delta;
       rot[idx + 2] += rotVel[idx + 2] * delta;
 
-      // Soft landing scale dissolve near terrain surface
       const currentY = pos[idx + 1];
       let currentScale = scales[i];
 
@@ -215,7 +194,6 @@ export function SnowParticles({
         currentScale = scales[i] * landingFactor;
       }
 
-      // Reset to sky top when snowflake hits ground level
       if (currentY <= minY) {
         pos[idx + 1] = maxY;
         pos[idx] = (pseudoRandom(i + time) - 0.5) * areaX;
